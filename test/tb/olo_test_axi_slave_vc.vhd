@@ -72,7 +72,7 @@ package olo_test_axi_slave_pkg is
     -- Expect AW transaction
     procedure expect_aw (
             signal net : inout network_t;
-            axi_slave  : olo_test_axi_slave_t;
+            axiSlavex  : olo_test_axi_slave_t;
             addr       : unsigned;
             id         : std_logic_vector := "X";
             len        : positive         := 1;     -- length of the transfer in beats (1 = 1 beat)
@@ -82,7 +82,7 @@ package olo_test_axi_slave_pkg is
     -- Expect AR transaction
     procedure expect_ar (
             signal net : inout network_t;
-            axi_slave  : olo_test_axi_slave_t;
+            axiSlavex  : olo_test_axi_slave_t;
             addr       : unsigned;
             id         : std_logic_vector := "X";
             len        : positive         := 1;     -- length of the transfer in beats (1 = 1 beat)
@@ -92,9 +92,9 @@ package olo_test_axi_slave_pkg is
     -- Expect W transaction (counter based)
     procedure expect_w (
             signal net  : inout network_t;
-            axi_slave   : olo_test_axi_slave_t;
+            axiSlavex   : olo_test_axi_slave_t;
             start_value : unsigned;
-            increment   : natural          := 1;
+            Increment   : natural          := 1;
             beats       : natural          := 1;     -- number of beats to write
             first_strb  : std_logic_vector := "X";
             last_strb   : std_logic_vector := "X";
@@ -106,7 +106,7 @@ package olo_test_axi_slave_pkg is
     -- The data and strobes at the right end (low index) are transferred first.
     procedure expect_w_arbitrary (
             signal net : inout network_t;
-            axi_slave  : olo_test_axi_slave_t;
+            axiSlavex  : olo_test_axi_slave_t;
             beats      : natural          := 1;
             all_data   : unsigned;
             all_strb   : std_logic_vector := "X";
@@ -116,7 +116,7 @@ package olo_test_axi_slave_pkg is
     -- Push B transaction
     procedure push_b (
             signal net : inout network_t;
-            axi_slave  : olo_test_axi_slave_t;
+            axiSlavex  : olo_test_axi_slave_t;
             resp       : resp_t           := AxiResp_Okay_c;
             id         : std_logic_vector := "X";
             delay      : time             := 0 ns); -- delay before executing transaction
@@ -124,7 +124,7 @@ package olo_test_axi_slave_pkg is
     -- Push R transaction (counter based)
     procedure push_r (
             signal net  : inout network_t;
-            axi_slave   : olo_test_axi_slave_t;
+            axiSlavex   : olo_test_axi_slave_t;
             start_value : unsigned;
             increment   : natural          := 1;
             beats       : natural          := 1;     -- number of beats to write
@@ -138,7 +138,7 @@ package olo_test_axi_slave_pkg is
     -- The data at the right end (low index) are transferred first.
     procedure push_r_arbitrary (
             signal net : inout network_t;
-            axi_slave  : olo_test_axi_slave_t;
+            axiSlavex  : olo_test_axi_slave_t;
             beats      : natural          := 1;
             all_data   : unsigned;
             resp       : resp_t           := AxiResp_Okay_c;
@@ -150,7 +150,7 @@ package olo_test_axi_slave_pkg is
     -- Single beat write
     procedure expect_single_write (
             signal net     : inout network_t;
-            axi_slave      : olo_test_axi_slave_t;
+            axiSlavex      : olo_test_axi_slave_t;
             addr           : unsigned;
             data           : unsigned;
             strb           : std_logic_vector := "X";
@@ -161,7 +161,7 @@ package olo_test_axi_slave_pkg is
     -- Single beat read
     procedure push_single_read (
             signal net     : inout network_t;
-            axi_slave      : olo_test_axi_slave_t;
+            axiSlavex      : olo_test_axi_slave_t;
             addr           : unsigned;
             data           : unsigned;
             ar_ready_delay : time := 0 ns;
@@ -170,7 +170,7 @@ package olo_test_axi_slave_pkg is
     -- Burst write (aligned)
     procedure expect_burst_write_aligned (
             signal net     : inout network_t;
-            axi_slave      : olo_test_axi_slave_t;
+            axiSlavex      : olo_test_axi_slave_t;
             addr           : unsigned;
             data_start     : unsigned;
             data_increment : natural := 1;
@@ -183,7 +183,7 @@ package olo_test_axi_slave_pkg is
     -- Burst read (aligned)
     procedure push_burst_read_aligned (
             signal net     : inout network_t;
-            axi_slave      : olo_test_axi_slave_t;
+            axiSlavex      : olo_test_axi_slave_t;
             addr           : unsigned;
             data_start     : unsigned;
             data_increment : natural := 1;
@@ -209,61 +209,61 @@ package body olo_test_axi_slave_pkg is
     -- Expect AW transaction
     procedure expect_aw (
             signal net : inout network_t;
-            axi_slave  : olo_test_axi_slave_t;
+            axiSlavex  : olo_test_axi_slave_t;
             addr       : unsigned;
             id         : std_logic_vector := "X";
             len        : positive         := 1;       -- length of the transfer in beats (1 = 1 beat)
             burst      : burst_t          := AxiBurst_Incr_c;
             delay      : time             := 0 ns) is -- delay from valid to ready
         variable msg : msg_t;
-        variable id_v : std_logic_vector(axi_slave.id_width-1 downto 0) := (others => '0');
+        variable id_v : std_logic_vector(axiSlavex.id_width-1 downto 0) := (others => '0');
     begin
         -- checks
         if id /= "X" then
-            check_equal(id'length, axi_slave.id_width, "expect_aw: id has wrong length");
+            check_equal(id'length, axiSlavex.id_width, "expect_aw: id has wrong length");
             id_v := id;
         end if;
         -- implementation
         msg := new_msg(axi_aw_msg);
-        push(msg, resize(addr, axi_slave.addr_width));
+        push(msg, resize(addr, axiSlavex.addr_width));
         push(msg, id_v);
         push(msg, len);
         push(msg, burst);
         push(msg, delay);
-        send(net, axi_slave.p_actor, msg);
+        send(net, axiSlavex.p_actor, msg);
     end procedure;
 
     -- Expect AR transaction
     procedure expect_ar (
             signal net : inout network_t;
-            axi_slave  : olo_test_axi_slave_t;
+            axiSlavex  : olo_test_axi_slave_t;
             addr       : unsigned;
             id         : std_logic_vector := "X";
             len        : positive         := 1;       -- length of the transfer in beats (1 = 1 beat)
             burst      : burst_t          := AxiBurst_Incr_c;
             delay      : time             := 0 ns) is -- delay from valid to ready
         variable msg : msg_t;
-        variable id_v : std_logic_vector(axi_slave.id_width-1 downto 0) := (others => '0');
+        variable id_v : std_logic_vector(axiSlavex.id_width-1 downto 0) := (others => '0');
     begin
         -- checks
         if id /= "X" then
-            check_equal(id'length, axi_slave.id_width, "expect_ar: id has wrong length");
+            check_equal(id'length, axiSlavex.id_width, "expect_ar: id has wrong length");
             id_v := id;
         end if;
         -- implementation
         msg := new_msg(axi_ar_msg);
-        push(msg, resize(addr, axi_slave.addr_width));
+        push(msg, resize(addr, axiSlavex.addr_width));
         push(msg, id_v);
         push(msg, len);
         push(msg, burst);
         push(msg, delay);
-        send(net, axi_slave.p_actor, msg);
+        send(net, axiSlavex.p_actor, msg);
     end procedure;
 
     -- Expect W transaction
     procedure expect_w (
             signal net  : inout network_t;
-            axi_slave   : olo_test_axi_slave_t;
+            axiSlavex   : olo_test_axi_slave_t;
             start_value : unsigned;
             increment   : natural          := 1;
             beats       : natural          := 1;       -- number of beats to write
@@ -271,50 +271,50 @@ package body olo_test_axi_slave_pkg is
             last_strb   : std_logic_vector := "X";
             delay       : time             := 0 ns;    -- delay from valid to ready
             beat_delay  : time             := 0 ns) is -- delay between beats
-        variable all_data_v : unsigned(axi_slave.data_width*beats-1 downto 0);
-        variable all_strb_v : std_logic_vector(axi_slave.data_bytes*beats-1 downto 0) := (others => '1');
-        variable data_v     : unsigned(axi_slave.data_width-1 downto 0)               := resize(start_value, axi_slave.data_width);
+        variable all_data_v : unsigned(axiSlavex.data_width*beats-1 downto 0);
+        variable all_strb_v : std_logic_vector(axiSlavex.data_bytes*beats-1 downto 0) := (others => '1');
+        variable data_v     : unsigned(axiSlavex.data_width-1 downto 0)               := resize(start_value, axiSlavex.data_width);
     begin
         -- checks
         if first_strb /= "X" then
-            check_equal(first_strb'length, axi_slave.data_bytes, "expect_w: first_strb has wrong length");
-            all_strb_v(axi_slave.data_bytes-1 downto 0) := first_strb;
+            check_equal(first_strb'length, axiSlavex.data_bytes, "expect_w: first_strb has wrong length");
+            all_strb_v(axiSlavex.data_bytes-1 downto 0) := first_strb;
         end if;
         if last_strb /= "X" then
-            check_equal(last_strb'length, axi_slave.data_width/8, "expect_w: last_strb has wrong length");
-            all_strb_v(all_strb_v'high downto all_strb_v'length-axi_slave.data_bytes) := last_strb;
+            check_equal(last_strb'length, axiSlavex.data_width/8, "expect_w: last_strb has wrong length");
+            all_strb_v(all_strb_v'high downto all_strb_v'length-axiSlavex.data_bytes) := last_strb;
         end if;
 
         -- assemble data
         for i in 0 to beats-1 loop
             -- default value
-            all_data_v(axi_slave.data_width*(i+1)-1 downto axi_slave.data_width*i) := data_v;
+            all_data_v(axiSlavex.data_width*(i+1)-1 downto axiSlavex.data_width*i) := data_v;
 
             -- execution
             data_v := data_v + increment;
             if i = 0 and first_strb /= "X" then
-                all_strb_v(axi_slave.data_bytes*(i+1)-1 downto axi_slave.data_bytes*i) := first_strb;
+                all_strb_v(axiSlavex.data_bytes*(i+1)-1 downto axiSlavex.data_bytes*i) := first_strb;
             elsif i = beats-1 and last_strb /= "X" then
-                all_strb_v(axi_slave.data_bytes*(i+1)-1 downto axi_slave.data_bytes*i) := last_strb;
+                all_strb_v(axiSlavex.data_bytes*(i+1)-1 downto axiSlavex.data_bytes*i) := last_strb;
             end if;
         end loop;
 
         -- implementation
-        expect_w_arbitrary(net, axi_slave, beats, all_data_v, all_strb_v, delay, beat_delay);
+        expect_w_arbitrary(net, axiSlavex, beats, all_data_v, all_strb_v, delay, beat_delay);
     end procedure;
 
     procedure expect_w_arbitrary (
             signal net : inout network_t;
-            axi_slave  : olo_test_axi_slave_t;
+            axiSlavex  : olo_test_axi_slave_t;
             beats      : natural          := 1;
             all_data   : unsigned;
             all_strb   : std_logic_vector := "X";
             delay      : time             := 0 ns;    -- delay from valid to ready
             beat_delay : time             := 0 ns) is -- delay between beats
         variable msg        : msg_t;
-        variable all_strb_v : std_logic_vector(axi_slave.data_width/8*beats-1 downto 0) := (others => '1');
-        variable data_v     : unsigned(axi_slave.data_width-1 downto 0);
-        variable strb_v     : std_logic_vector(axi_slave.data_width/8-1 downto 0);
+        variable all_strb_v : std_logic_vector(axiSlavex.data_width/8*beats-1 downto 0) := (others => '1');
+        variable data_v     : unsigned(axiSlavex.data_width-1 downto 0);
+        variable strb_v     : std_logic_vector(axiSlavex.data_width/8-1 downto 0);
         variable last_v     : std_logic;
     begin
         -- checks
@@ -322,7 +322,7 @@ package body olo_test_axi_slave_pkg is
             check_equal(all_strb'length, all_strb_v'length, "expect_w_arbitrary: all_strb has wrong length");
             all_strb_v := all_strb;
         end if;
-        check_equal(all_data'length, axi_slave.data_width*beats, "expect_w_arbitrary: all_data has wrong length");
+        check_equal(all_data'length, axiSlavex.data_width*beats, "expect_w_arbitrary: all_data has wrong length");
         -- implementation
         msg := new_msg(axi_w_msg);
         push(msg, delay);
@@ -330,8 +330,8 @@ package body olo_test_axi_slave_pkg is
 
         -- loop through beats
         for i in 0 to beats-1 loop
-            data_v := all_data(axi_slave.data_width*(i+1)-1 downto axi_slave.data_width*i);
-            strb_v := all_strb_v(axi_slave.data_width/8*(i+1)-1 downto axi_slave.data_width/8*i);
+            data_v := all_data(axiSlavex.data_width*(i+1)-1 downto axiSlavex.data_width*i);
+            strb_v := all_strb_v(axiSlavex.data_width/8*(i+1)-1 downto axiSlavex.data_width/8*i);
             last_v := '0';
             if i = beats-1 then
                 last_v := '1';
@@ -341,22 +341,22 @@ package body olo_test_axi_slave_pkg is
             push(msg, last_v);
         end loop;
 
-        send(net, axi_slave.p_actor, msg);
+        send(net, axiSlavex.p_actor, msg);
     end procedure;
 
     -- Push B transaction
     procedure push_b (
             signal net : inout network_t;
-            axi_slave  : olo_test_axi_slave_t;
+            axiSlavex  : olo_test_axi_slave_t;
             resp       : resp_t           := AxiResp_Okay_c;
             id         : std_logic_vector := "X";
             delay      : time             := 0 ns) is -- delay before executing transaction
         variable msg  : msg_t;
-        variable id_v : std_logic_vector(axi_slave.id_width-1 downto 0) := (others => '0');
+        variable id_v : std_logic_vector(axiSlavex.id_width-1 downto 0) := (others => '0');
     begin
         -- checks
         if id /= "X" then
-            check_equal(id'length, axi_slave.id_width, "push_b: id has wrong length");
+            check_equal(id'length, axiSlavex.id_width, "push_b: id has wrong length");
             id_v := id;
         end if;
         -- implementation
@@ -364,13 +364,13 @@ package body olo_test_axi_slave_pkg is
         push(msg, resp);
         push(msg, id_v);
         push(msg, delay);
-        send(net, axi_slave.p_actor, msg);
+        send(net, axiSlavex.p_actor, msg);
     end procedure;
 
     -- Push R transaction
     procedure push_r (
             signal net  : inout network_t;
-            axi_slave   : olo_test_axi_slave_t;
+            axiSlavex   : olo_test_axi_slave_t;
             start_value : unsigned;
             increment   : natural          := 1;
             beats       : natural          := 1;       -- number of beats to write
@@ -378,32 +378,32 @@ package body olo_test_axi_slave_pkg is
             id          : std_logic_vector := "X";
             delay       : time             := 0 ns;    -- delay before executing transaction
             beat_delay  : time             := 0 ns) is -- delay between beats
-        variable all_data_v : unsigned(axi_slave.data_width*beats-1 downto 0);
-        variable data_v     : unsigned(axi_slave.data_width-1 downto 0)       := resize(start_value, axi_slave.data_width);
-        variable id_v       : std_logic_vector(axi_slave.id_width-1 downto 0) := (others => '0');
+        variable all_data_v : unsigned(axiSlavex.data_width*beats-1 downto 0);
+        variable data_v     : unsigned(axiSlavex.data_width-1 downto 0)       := resize(start_value, axiSlavex.data_width);
+        variable id_v       : std_logic_vector(axiSlavex.id_width-1 downto 0) := (others => '0');
     begin
         -- checks
         if id /= "X" then
-            check_equal(id'length, axi_slave.id_width, "push_r: id has wrong length");
+            check_equal(id'length, axiSlavex.id_width, "push_r: id has wrong length");
             id_v := id;
         end if;
 
         -- assemble data
         for i in 0 to beats-1 loop
             -- Default value
-            all_data_v(axi_slave.data_width*(i+1)-1 downto axi_slave.data_width*i) := data_v;
+            all_data_v(axiSlavex.data_width*(i+1)-1 downto axiSlavex.data_width*i) := data_v;
 
             -- Actual data
             data_v := data_v + increment;
         end loop;
 
         -- implementation
-        push_r_arbitrary(net, axi_slave, beats, all_data_v, resp, id_v, delay, beat_delay);
+        push_r_arbitrary(net, axiSlavex, beats, all_data_v, resp, id_v, delay, beat_delay);
     end procedure;
 
     procedure push_r_arbitrary (
             signal net : inout network_t;
-            axi_slave  : olo_test_axi_slave_t;
+            axiSlavex  : olo_test_axi_slave_t;
             beats      : natural          := 1;
             all_data   : unsigned;
             resp       : resp_t           := AxiResp_Okay_c;
@@ -411,16 +411,16 @@ package body olo_test_axi_slave_pkg is
             delay      : time             := 0 ns;    -- delay before executing transaction
             beat_delay : time             := 0 ns) is -- delay between beats
         variable msg    : msg_t;
-        variable id_v   : std_logic_vector(axi_slave.id_width-1 downto 0) := (others => '0');
-        variable data_v : unsigned(axi_slave.data_width-1 downto 0);
+        variable id_v   : std_logic_vector(axiSlavex.id_width-1 downto 0) := (others => '0');
+        variable data_v : unsigned(axiSlavex.data_width-1 downto 0);
         variable last_v : std_logic;
     begin
         -- checks
         if id /= "X" then
-            check_equal(id'length, axi_slave.id_width, "push_r_arbitrary: id has wrong length");
+            check_equal(id'length, axiSlavex.id_width, "push_r_arbitrary: id has wrong length");
             id_v := id;
         end if;
-        check_equal(all_data'length, axi_slave.data_width*beats, "push_r_arbitrary: all_data has wrong length");
+        check_equal(all_data'length, axiSlavex.data_width*beats, "push_r_arbitrary: all_data has wrong length");
 
         -- implementation
         msg := new_msg(axi_r_msg);
@@ -431,7 +431,7 @@ package body olo_test_axi_slave_pkg is
 
         -- loop through beats
         for i in 0 to beats-1 loop
-            data_v := all_data(axi_slave.data_width*(i+1)-1 downto axi_slave.data_width*i);
+            data_v := all_data(axiSlavex.data_width*(i+1)-1 downto axiSlavex.data_width*i);
             last_v := '0';
             if i = beats-1 then
                 last_v := '1';
@@ -440,14 +440,14 @@ package body olo_test_axi_slave_pkg is
             push(msg, last_v);
         end loop;
 
-        send(net, axi_slave.p_actor, msg);
+        send(net, axiSlavex.p_actor, msg);
     end procedure;
 
     -- *** Push Compound Messages ***
     -- Single beat write
     procedure expect_single_write (
             signal net     : inout network_t;
-            axi_slave      : olo_test_axi_slave_t;
+            axiSlavex      : olo_test_axi_slave_t;
             addr           : unsigned;
             data           : unsigned;
             strb           : std_logic_vector := "X";
@@ -455,28 +455,28 @@ package body olo_test_axi_slave_pkg is
             w_ready_delay  : time             := 0 ns;
             b_valid_delay  : time             := 0 ns) is
     begin
-        expect_aw(net, axi_slave, addr, delay => aw_ready_delay);
-        expect_w(net, axi_slave, data, first_strb => strb, delay => w_ready_delay);
-        push_b(net, axi_slave, resp => AxiResp_Okay_c, delay => b_valid_delay);
+        expect_aw(net, axiSlavex, addr, delay => aw_ready_delay);
+        expect_w(net, axiSlavex, data, first_strb => strb, delay => w_ready_delay);
+        push_b(net, axiSlavex, resp => AxiResp_Okay_c, delay => b_valid_delay);
     end procedure;
 
     -- Single beat read
     procedure push_single_read (
             signal net     : inout network_t;
-            axi_slave      : olo_test_axi_slave_t;
+            axiSlavex      : olo_test_axi_slave_t;
             addr           : unsigned;
             data           : unsigned;
             ar_ready_delay : time := 0 ns;
             r_valid_delay  : time := 0 ns) is
     begin
-        expect_ar(net, axi_slave, addr, delay => ar_ready_delay);
-        push_r(net, axi_slave, data, resp => AxiResp_Okay_c, delay => r_valid_delay);
+        expect_ar(net, axiSlavex, addr, delay => ar_ready_delay);
+        push_r(net, axiSlavex, data, resp => AxiResp_Okay_c, delay => r_valid_delay);
     end procedure;
 
     -- Burst write (aligned)
     procedure expect_burst_write_aligned (
             signal net     : inout network_t;
-            axi_slave      : olo_test_axi_slave_t;
+            axiSlavex      : olo_test_axi_slave_t;
             addr           : unsigned;
             data_start     : unsigned;
             data_increment : natural := 1;
@@ -486,15 +486,15 @@ package body olo_test_axi_slave_pkg is
             b_valid_delay  : time    := 0 ns;
             beat_delay     : time    := 0 ns) is
     begin
-        expect_aw(net, axi_slave, addr, len => beats, delay => aw_ready_delay);
-        expect_w(net, axi_slave, data_start, data_increment, beats, delay => w_ready_delay, beat_delay => beat_delay);
-        push_b(net, axi_slave, resp => AxiResp_Okay_c, delay => b_valid_delay);
+        expect_aw(net, axiSlavex, addr, len => beats, delay => aw_ready_delay);
+        expect_w(net, axiSlavex, data_start, data_increment, beats, delay => w_ready_delay, beat_delay => beat_delay);
+        push_b(net, axiSlavex, resp => AxiResp_Okay_c, delay => b_valid_delay);
     end procedure;
 
     -- Burst read (aligned)
     procedure push_burst_read_aligned (
             signal net     : inout network_t;
-            axi_slave      : olo_test_axi_slave_t;
+            axiSlavex      : olo_test_axi_slave_t;
             addr           : unsigned;
             data_start     : unsigned;
             data_increment : natural := 1;
@@ -503,8 +503,8 @@ package body olo_test_axi_slave_pkg is
             r_valid_delay  : time    := 0 ns;
             beat_delay     : time    := 0 ns) is
     begin
-        expect_ar(net, axi_slave, addr, len => beats, delay => ar_ready_delay);
-        push_r(net, axi_slave, data_start, data_increment, beats, resp => AxiResp_Okay_c, delay => r_valid_delay, beat_delay => beat_delay);
+        expect_ar(net, axiSlavex, addr, len => beats, delay => ar_ready_delay);
+        push_r(net, axiSlavex, data_start, data_increment, beats, resp => AxiResp_Okay_c, delay => r_valid_delay, beat_delay => beat_delay);
     end procedure;
 
     -- Constructor
