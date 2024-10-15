@@ -100,7 +100,7 @@ architecture sim of olo_base_cc_handshake_tb is
     -----------------------------------------------------------------------------------------------
     -- Interface Signals
     -----------------------------------------------------------------------------------------------
-    signal In_Clk     : std_logic                                  := '0';
+    signal In_Clk     : std_logic                                 := '0';
     signal In_RstIn   : std_logic                                  := '0';
     signal In_RstOut  : std_logic                                  := '0';
     signal In_Valid   : std_logic                                  := '0';

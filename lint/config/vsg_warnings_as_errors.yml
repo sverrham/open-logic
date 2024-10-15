@@ -1,0 +1,4 @@
+# Treat warnings as errors (e.g. for strict CI)
+rule:
+  global:
+     severity: "Error"
