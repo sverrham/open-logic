@@ -1,0 +1,32 @@
+[tasks]
+proof
+cover
+proof_bmc
+
+[options]
+depth 30 
+cover: mode cover
+proof: mode prove
+proof_bmc: mode bmc
+
+[engines]
+cover: smtbmc yices
+proof: abc pdr 
+proof_bmc: smtbmc yices
+
+[script]
+ghdl --std=08  \
+--work=olo_lib olo_base_pkg_array.vhd --work=olo_lib olo_base_pkg_math.vhd --work=olo_lib olo_base_pkg_logic.vhd \
+--work=olo_lib olo_base_strobe_gen.vhd --work=olo_lib olo_intf_sync.vhd \
+formal_olo_intf_uart.psl olo_intf_uart.vhd -e olo_intf_uart
+
+prep -top olo_intf_uart 
+
+[files]
+../../../src/intf/vhdl/olo_intf_uart.vhd
+../../../src/intf/vhdl/olo_intf_sync.vhd
+../../../src/base/vhdl/olo_base_strobe_gen.vhd
+../../../src/base/vhdl/olo_base_pkg_array.vhd
+../../../src/base/vhdl/olo_base_pkg_math.vhd
+../../../src/base/vhdl/olo_base_pkg_logic.vhd
+formal_olo_intf_uart.psl

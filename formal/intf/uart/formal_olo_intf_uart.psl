@@ -1,0 +1,33 @@
+vunit formal_olo_intf_uart (olo_intf_uart(rtl)) {
+
+   -----------------------------------------------------------------
+   -- Assumptions
+   -----------------------------------------------------------------
+	default clock is rising_edge(Clk);
+   assume Rst;
+	assume always not Rst -> next not Rst;
+
+	-- Assume input follows valid-ready rules.
+	-- assume always Tx_Valid and not TX_Ready -> next stable(Tx_Data) and Tx_Valid;
+
+  -----------------------------------------------------------------
+   -- Assertions
+   -----------------------------------------------------------------
+   send_data : assert always Tx_Valid and Tx_Ready and not Rst |=> {Uart_Tx[*2 to 3]; not Uart_Tx} ;
+   double_valid : assert always Tx_Valid and Tx_Ready |=> not Tx_Ready;
+
+--	receive_data : assert always {Uart_Rx and not Rst; not Uart_Rx} |=> {not Rx_Valid[*4]; Rx_Valid};
+	no_double_valid_receive : assert always Rx_Valid and not Rst |=> not Rx_Valid;
+
+   -- Tx should not toggle faster than baudrate, test with a couple of clock cycles
+--   tx_high_after_toggle : assert always {not Uart_Tx and not rst; Uart_Tx} |=> {Uart_TX[*10]};
+   tx_low_after_toggle : assert always {Uart_Tx and not rst; not Uart_Tx} |=> {not Uart_TX[*10]};
+
+
+	-----------------------------------------------------------------
+	-- Cover
+   	-----------------------------------------------------------------
+	cover_receive_data : cover {not Rx_Valid; Rx_Valid};
+   cover_send_data: cover {Tx_Ready and Tx_Valid; not Tx_Valid};
+	cover_uart_tx: cover {Uart_Tx; not Uart_Tx};
+}
